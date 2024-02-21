@@ -18,7 +18,6 @@ export class UserService {
   }
 
   async findAll() {
-    console.log(await this._usersRepository.findAll());
     return `This action returns all user`;
   }
 

@@ -12,10 +12,11 @@ import { EntityBase } from './entity.base';
 
 export class RepositoryBase<
   T extends EntityTarget<ObjectLiteral & EntityBase>,
+  TResponse extends ObjectLiteral & EntityBase,
   TFilterDto,
   TCreateDto,
   TUpdateDto,
-> implements IRepository<T, TFilterDto, TCreateDto, TUpdateDto>
+> implements IRepository<TResponse, TFilterDto, TCreateDto, TUpdateDto>
 {
   private entityManager: EntityManager;
   private repository: Repository<ObjectLiteral>;
@@ -27,18 +28,18 @@ export class RepositoryBase<
     this.entityManager = this.dataSource.createEntityManager();
     this.repository = this.entityManager.getRepository(entity);
   }
-  async create(createDto: TCreateDto): Promise<T> {
+  async create(createDto: TCreateDto): Promise<TResponse> {
     const createdEntity = this.repository.create(createDto);
     await this.repository.save(createdEntity);
-    return createdEntity as T;
+    return createdEntity as TResponse;
   }
-  async findAll(): Promise<T[]> {
+  async findAll(): Promise<TResponse[]> {
     const result = await this.repository.find();
-    return result as T[];
+    return result as TResponse[];
   }
-  async findOne(filter: TFilterDto): Promise<T> {
+  async findOne(filter: TFilterDto): Promise<TResponse> {
     const response = await this.repository.findOneBy(filter);
-    return response as T;
+    return response as TResponse;
   }
   async update(id: number, updateDto: TUpdateDto): Promise<UpdateResult> {
     return await this.repository.update({ id }, updateDto);
