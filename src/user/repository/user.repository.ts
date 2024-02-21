@@ -11,6 +11,7 @@ export class UserRepository extends RepositoryBase<
     name: 'User';
     type: User;
   },
+  User,
   UpdateUserDto,
   CreateUserDto,
   UpdateUserDto
