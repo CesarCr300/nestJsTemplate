@@ -1,11 +1,9 @@
-import { ConfigModule } from '@nestjs/config';
-import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
 import { env } from 'process';
 
-export class DatabaseConfiguration {
-  constructor(private readonly _config: ConfigModule) {}
-
-  static get(): TypeOrmModuleOptions {
+export const dbConfig: TypeOrmModuleAsyncOptions = {
+  useFactory: () => {
+    console.log(env.DATABASE_HOST);
     return {
       type: 'mysql',
       host: env.DATABASE_HOST,
@@ -16,5 +14,5 @@ export class DatabaseConfiguration {
       entities: [],
       autoLoadEntities: true,
     };
-  }
-}
+  },
+};
