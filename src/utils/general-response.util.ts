@@ -10,7 +10,7 @@ export class GeneralResponseUtil {
     const response = new GeneralResponse<T>();
     response.message = message;
     response.data = data;
-    response.status = status;
+    response.statusCode = status;
     return response;
   }
   static OK<T>(message: string, data: T): GeneralResponse<T> {
