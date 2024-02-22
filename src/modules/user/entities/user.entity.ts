@@ -1,5 +1,12 @@
 import { EntityBase } from 'src/base/entity.base';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { UserType } from './type-user.entity';
 
 @Entity({ name: 'tbl_user' })
 export class User implements EntityBase {
@@ -15,4 +22,11 @@ export class User implements EntityBase {
   lastName: string;
   @Column({ name: 'int_phone_number' })
   phoneNumber: number;
+
+  @Column({ name: 'int_user_type_id' })
+  userTypeId: number;
+
+  @ManyToOne((type) => UserType, (type) => type.users)
+  @JoinColumn({ name: 'int_user_type_id' })
+  userType: UserType;
 }
