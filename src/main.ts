@@ -9,6 +9,8 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('API')
     .setVersion('1.0')
+    .addBearerAuth()
+    .addSecurityRequirements('bearer') //this line it's like adding this: @ApiBearerAuth() to every controller
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
