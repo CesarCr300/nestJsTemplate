@@ -14,7 +14,7 @@ export class AuthService {
 
   async validateUser(email: string, password: string) {
     const user = await this._userRepository.findOne({ email });
-    if (user && HashingUtil.compare(password, user.password)) {
+    if (user && (await HashingUtil.compare(password, user.password))) {
       return user;
     }
     return null;
