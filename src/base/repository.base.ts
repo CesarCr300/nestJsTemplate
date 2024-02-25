@@ -33,8 +33,8 @@ export class RepositoryBase<
     await this.repository.save(createdEntity);
     return createdEntity as TResponse;
   }
-  async findAll(): Promise<TResponse[]> {
-    const result = await this.repository.find();
+  async findAll(filter?: TFilterDto): Promise<TResponse[]> {
+    const result = await this.repository.find({ where: filter });
     return result as TResponse[];
   }
   async findOne(filter: TFilterDto): Promise<TResponse> {
