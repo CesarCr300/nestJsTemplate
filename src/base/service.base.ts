@@ -43,4 +43,16 @@ export class ServiceBase<
   async findAll(dto?: TFilterDto) {
     return await this._repository.findAll(dto);
   }
+
+  async update(id: number, dto: TUpdateDto) {
+    //use method to corroborate that exists
+
+    const result = await this._repository.update(id, dto);
+    if (result.affected == 0)
+      throw new HttpException(
+        `Hubo un problema al actualizar ${this._article} ${this._resourceName}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    return null;
+  }
 }
