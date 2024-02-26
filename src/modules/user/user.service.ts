@@ -5,16 +5,27 @@ import { UpdateUserDto } from './dto/update-user.dto';
 // import { User } from './entities/user.entity';
 // import { Repository } from 'typeorm';
 import { UserRepository } from './repository/user.repository';
+import { ServiceBase } from 'src/base/service.base';
+import { User } from './entities/user.entity';
 
 @Injectable()
-export class UserService {
-  constructor(
-    // @InjectRepository(User)
-    // private _usersRepository: Repository<User>,
-    private _usersRepository: UserRepository,
-  ) {}
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+export class UserService extends ServiceBase<
+  {
+    name: 'User';
+    type: User;
+  },
+  User,
+  UpdateUserDto,
+  CreateUserDto,
+  UpdateUserDto
+> {
+  constructor(_usersRepository: UserRepository) {
+    super(
+      _usersRepository,
+      (dto: CreateUserDto) => ({ email: dto.email }),
+      'el',
+      'usuario',
+    );
   }
 
   async findAll() {
