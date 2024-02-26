@@ -55,4 +55,17 @@ export class ServiceBase<
       );
     return null;
   }
+
+  async delete(id: number) {
+    //use method to corroborate that exists
+
+    const result = await this._repository.remove(id);
+    if (result.affected == 0)
+      throw new HttpException(
+        `Hubo un problema de eliminar ${this._article} ${this._resourceName}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
+    return null;
+  }
 }
