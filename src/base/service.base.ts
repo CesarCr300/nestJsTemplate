@@ -55,6 +55,12 @@ export class ServiceBase<
   }
 
   async update(id: number, dto: TUpdateDto) {
+    if (Object.keys(dto).length == 0)
+      throw new HttpException(
+        `No se estan registrando cambios en ${this._article} ${this._resourceName}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+
     await this.findOne({ id } as any);
 
     const result = await this._repository.update(id, dto);
