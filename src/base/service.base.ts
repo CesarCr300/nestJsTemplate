@@ -26,6 +26,20 @@ export class ServiceBase<
     protected _resourceName: string,
   ) {}
 
+  async findOne(filter: TFilterDto): Promise<TResponse> {
+    const response = await this._repository.findOne(filter);
+    if (response == null)
+      throw new HttpException(
+        `No se ha encontrado ${this._article} ${this._resourceName}`,
+        HttpStatus.NOT_FOUND,
+      );
+    return response;
+  }
+
+  async findAll(dto?: TFilterDto) {
+    return await this._repository.findAll(dto);
+  }
+
   async create(dto: TCreateDto) {
     const entityFounded = await this._repository.findOne(
       this._functionToCreateObjectToFindIfTheEntityAlreadyExists(dto),
@@ -38,10 +52,6 @@ export class ServiceBase<
 
     const entityCreated = await this._repository.create(dto);
     return entityCreated;
-  }
-
-  async findAll(dto?: TFilterDto) {
-    return await this._repository.findAll(dto);
   }
 
   async update(id: number, dto: TUpdateDto) {
@@ -67,15 +77,5 @@ export class ServiceBase<
       );
 
     return null;
-  }
-
-  async findOne(filter: TFilterDto): Promise<TResponse> {
-    const response = await this._repository.findOne(filter);
-    if (response == null)
-      throw new HttpException(
-        `No se ha encontrado ${this._article} ${this._resourceName}`,
-        HttpStatus.NOT_FOUND,
-      );
-    return response;
   }
 }
