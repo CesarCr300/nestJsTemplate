@@ -7,6 +7,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRepository } from './repository/user.repository';
 import { ServiceBase } from 'src/base/service.base';
 import { User } from './entities/user.entity';
+import { FilterUserDto } from './dto/filter-user.dto';
 
 @Injectable()
 export class UserService extends ServiceBase<
@@ -15,7 +16,7 @@ export class UserService extends ServiceBase<
     type: User;
   },
   User,
-  UpdateUserDto,
+  FilterUserDto,
   CreateUserDto,
   UpdateUserDto
 > {
@@ -26,21 +27,5 @@ export class UserService extends ServiceBase<
       'el',
       'usuario',
     );
-  }
-
-  // async findAll() {
-  //   return `This action returns all user`;
-  // }
-
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
-
-  // update(id: number, updateUserDto: UpdateUserDto) {
-  //   return `This action updates a #${id} user`;
-  // }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
   }
 }
