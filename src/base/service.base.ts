@@ -39,4 +39,8 @@ export class ServiceBase<
     const entityCreated = await this._repository.create(dto);
     return entityCreated;
   }
+
+  async findAll(dto?: TFilterDto) {
+    return await this._repository.findAll(dto);
+  }
 }
