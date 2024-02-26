@@ -45,7 +45,7 @@ export class ServiceBase<
   }
 
   async update(id: number, dto: TUpdateDto) {
-    //use method to corroborate that exists
+    await this.findOne({ id } as any);
 
     const result = await this._repository.update(id, dto);
     if (result.affected == 0)
@@ -56,8 +56,8 @@ export class ServiceBase<
     return null;
   }
 
-  async delete(id: number) {
-    //use method to corroborate that exists
+  async remove(id: number) {
+    await this.findOne({ id } as any);
 
     const result = await this._repository.remove(id);
     if (result.affected == 0)
@@ -67,5 +67,15 @@ export class ServiceBase<
       );
 
     return null;
+  }
+
+  async findOne(filter: TFilterDto): Promise<TResponse> {
+    const response = await this._repository.findOne(filter);
+    if (response == null)
+      throw new HttpException(
+        `No se ha encontrado ${this._article} ${this._resourceName}`,
+        HttpStatus.NOT_FOUND,
+      );
+    return response;
   }
 }

@@ -26,7 +26,7 @@ export class User implements EntityBase {
   @Column({ name: 'int_user_type_id' })
   userTypeId: number;
 
-  @ManyToOne((type) => UserType, (type) => type.users)
+  @ManyToOne(() => UserType, (type) => type.users)
   @JoinColumn({ name: 'int_user_type_id' })
   userType: UserType;
 }
