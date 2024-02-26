@@ -28,9 +28,9 @@ export class UserService extends ServiceBase<
     );
   }
 
-  async findAll() {
-    return `This action returns all user`;
-  }
+  // async findAll() {
+  //   return `This action returns all user`;
+  // }
 
   findOne(id: number) {
     return `This action returns a #${id} user`;
