@@ -47,4 +47,7 @@ export class RepositoryBase<
   async remove(id: number): Promise<DeleteResult> {
     return await this.repository.delete(id);
   }
+  async logicRemove(id: number): Promise<UpdateResult> {
+    return await this.repository.update({ id }, { state: 0 });
+  }
 }

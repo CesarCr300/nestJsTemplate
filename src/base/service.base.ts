@@ -27,7 +27,7 @@ export class ServiceBase<
   ) {}
 
   async findOne(filter: TFilterDto): Promise<TResponse> {
-    const response = await this._repository.findOne(filter);
+    const response = await this._repository.findOne({ state: 1, ...filter });
     if (response == null)
       throw new HttpException(
         `No se ha encontrado ${this._article} ${this._resourceName}`,
@@ -37,7 +37,7 @@ export class ServiceBase<
   }
 
   async findAll(dto?: TFilterDto) {
-    return await this._repository.findAll(dto);
+    return await this._repository.findAll({ state: 1, ...dto });
   }
 
   async create(dto: TCreateDto) {
@@ -75,7 +75,7 @@ export class ServiceBase<
   async remove(id: number) {
     await this.findOne({ id } as any);
 
-    const result = await this._repository.remove(id);
+    const result = await this._repository.logicRemove(id);
     if (result.affected == 0)
       throw new HttpException(
         `Hubo un problema de eliminar ${this._article} ${this._resourceName}`,
