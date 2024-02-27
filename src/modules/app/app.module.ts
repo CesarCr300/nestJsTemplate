@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 
@@ -10,6 +10,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from '../auth/auth.module';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { UserInterceptor } from 'src/interceptors/user.interceptor';
+import { ClsModule } from 'nestjs-cls';
 
 @Module({
   imports: [
@@ -17,6 +19,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
     TypeOrmModule.forRootAsync(dbConfig),
     UserModule,
     AuthModule,
+    ClsModule.forRoot({
+      global: true,
+      middleware: { mount: true },
+    }),
   ],
   controllers: [AppController],
   providers: [
@@ -24,6 +30,10 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
     {
       provide: APP_GUARD,
       useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: UserInterceptor,
     },
   ],
 })
