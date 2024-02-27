@@ -12,10 +12,9 @@ export class UserInterceptor implements NestInterceptor {
   constructor(private readonly cls: ClsService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
-    console.log('user interpcetor');
-    // const request = context.switchToHttp().getRequest();
-    // const user = request.user;
-    // this.cls.set('user', user);
+    const request = context.switchToHttp().getRequest();
+    const user = request.user;
+    this.cls.set('user', user);
     return next.handle();
   }
 }
