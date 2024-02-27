@@ -8,7 +8,8 @@ export class UserType implements EntityBase {
   id: number;
   @Column({ name: 'vch_name' })
   name: string;
+  state: number;
 
-  @OneToMany((type) => User, (user) => user.userType)
+  @OneToMany(() => User, (user) => user.userType)
   users: User[];
 }
