@@ -24,6 +24,7 @@ export class ServiceBase<
     ) => any,
     protected _article: string,
     protected _resourceName: string,
+    private _requiresValidationInCreation: boolean = true,
   ) {}
 
   async findOne(filter: TFilterDto): Promise<TResponse> {
@@ -41,14 +42,16 @@ export class ServiceBase<
   }
 
   async create(dto: TCreateDto) {
-    const entityFounded = await this._repository.findOne(
-      this._functionToCreateObjectToFindIfTheEntityAlreadyExists(dto),
-    );
-    if (entityFounded != null)
-      throw new HttpException(
-        `${this._article} ${this._resourceName} ya existe`,
-        HttpStatus.CONFLICT,
+    if (this._requiresValidationInCreation) {
+      const entityFounded = await this._repository.findOne(
+        this._functionToCreateObjectToFindIfTheEntityAlreadyExists(dto),
       );
+      if (entityFounded != null)
+        throw new HttpException(
+          `${this._article} ${this._resourceName} ya existe`,
+          HttpStatus.CONFLICT,
+        );
+    }
 
     const entityCreated = await this._repository.create(dto);
     return entityCreated;
