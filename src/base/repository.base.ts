@@ -3,6 +3,8 @@ import {
   DeleteResult,
   EntityManager,
   EntityTarget,
+  FindManyOptions,
+  FindOneOptions,
   ObjectLiteral,
   Repository,
   UpdateResult,
@@ -33,12 +35,21 @@ export class RepositoryBase<
     await this.repository.save(createdEntity);
     return createdEntity as TResponse;
   }
-  async findAll(filter?: TFilterDto): Promise<TResponse[]> {
-    const result = await this.repository.find({ where: filter });
+  async findAll(
+    filter?: TFilterDto,
+    options: FindManyOptions<ObjectLiteral> = {},
+  ): Promise<TResponse[]> {
+    const result = await this.repository.find({ where: filter, ...options });
     return result as TResponse[];
   }
-  async findOne(filter: TFilterDto): Promise<TResponse> {
-    const response = await this.repository.findOneBy(filter);
+  async findOne(
+    filter: TFilterDto,
+    options: FindOneOptions<ObjectLiteral> = {},
+  ): Promise<TResponse> {
+    const response = await this.repository.findOne({
+      where: filter,
+      ...options,
+    });
     return response as TResponse;
   }
   async update(id: number, updateDto: TUpdateDto): Promise<UpdateResult> {
