@@ -1,5 +1,10 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { EntityTarget, ObjectLiteral } from 'typeorm';
+import {
+  EntityTarget,
+  FindManyOptions,
+  FindOneOptions,
+  ObjectLiteral,
+} from 'typeorm';
 
 import { RepositoryBase } from './repository.base';
 import { EntityBase } from './entity.base';
@@ -27,8 +32,14 @@ export class ServiceBase<
     private _requiresValidationInCreation: boolean = true,
   ) {}
 
-  async findOne(filter: TFilterDto): Promise<TResponse> {
-    const response = await this._repository.findOne({ state: 1, ...filter });
+  async findOne(
+    filter: TFilterDto,
+    options: FindOneOptions<ObjectLiteral> = {},
+  ): Promise<TResponse> {
+    const response = await this._repository.findOne(
+      { state: 1, ...filter },
+      options,
+    );
     if (response == null)
       throw new HttpException(
         `No se ha encontrado ${this._article} ${this._resourceName}`,
@@ -37,8 +48,11 @@ export class ServiceBase<
     return response;
   }
 
-  async findAll(dto?: TFilterDto) {
-    return await this._repository.findAll({ state: 1, ...dto });
+  async findAll(
+    dto?: TFilterDto,
+    options: FindManyOptions<ObjectLiteral> = {},
+  ) {
+    return await this._repository.findAll({ state: 1, ...dto }, options);
   }
 
   async create(dto: TCreateDto) {

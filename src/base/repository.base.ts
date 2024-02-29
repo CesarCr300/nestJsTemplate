@@ -9,6 +9,7 @@ import {
   Repository,
   UpdateResult,
 } from 'typeorm';
+
 import { IRepository } from '../interfaces/repository.interface';
 import { EntityBase } from './entity.base';
 
