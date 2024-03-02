@@ -7,6 +7,8 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     '!*/node_modules/**',
+    '!<rootDir>/src/base/**/*.ts',
+    '!*/**/*.dto.ts',
     '!<rootDir>/src/main.ts',
   ],
   reporters: [
