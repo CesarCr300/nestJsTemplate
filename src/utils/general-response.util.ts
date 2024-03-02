@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
-import { GeneralResponse } from 'src/entities/general-response.entity';
+
+import { GeneralResponse } from '../entities/general-response.entity';
 
 export class GeneralResponseUtil {
   static Status<T>(

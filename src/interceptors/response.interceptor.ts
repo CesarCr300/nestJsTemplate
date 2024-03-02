@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { env } from 'process';
 import { Observable, catchError, map, throwError } from 'rxjs';
-import { GeneralResponse } from 'src/entities/general-response.entity';
+
+import { GeneralResponse } from '../entities/general-response.entity';
 
 @Injectable()
 export class ResponseInterceptor implements NestInterceptor {

@@ -5,14 +5,14 @@ import { ConfigModule } from '@nestjs/config';
 import { DataSource } from 'typeorm';
 import { ClsModule } from 'nestjs-cls';
 
-import { UserModule } from 'src/modules/user/user.module';
-import { dbConfig } from 'src/config/db.config';
-import { UserInterceptor } from 'src/interceptors/user.interceptor';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { dbConfig } from '../../config/db.config';
+import { UserInterceptor } from '../../interceptors/user.interceptor';
+import { AuditorySuscriber } from '../auditory/suscribers/auditory.suscriber';
+import { UserModule } from '../user/user.module';
 import { AuthModule } from '../auth/auth.module';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { AuditorySuscriber } from '../auditory/suscribers/auditory.suscriber';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 @Module({
   imports: [
