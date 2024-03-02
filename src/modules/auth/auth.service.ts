@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from 'src/modules/user/repository/user.repository';
-import { HashingUtil } from 'src/utils/hashing';
+import { UserRepository } from '../user/repository/user.repository';
+import { HashingUtil } from '../../utils/hashing';
 import { User } from '../user/entities/user.entity';
 import { UserPayload } from '../user/entities/payload-user.entity';
 
