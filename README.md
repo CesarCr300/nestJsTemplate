@@ -10,6 +10,7 @@ This in NestJS template for a basic API REST with:
 - Response Interceptor
 - [Testing and Coverage](#TestingandCoverage)
 - Swagger
+- Docker
 
 These implementions were made following the [NestJS documentation](https://docs.nestjs.com/).
 
@@ -30,6 +31,13 @@ $ yarn run start:dev
 
 # production mode
 $ yarn run start:prod
+```
+
+## Running the with docker
+
+```bash
+# development
+$ yarn run docker:dev
 ```
 
 ## Test
