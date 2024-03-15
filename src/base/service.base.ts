@@ -3,6 +3,7 @@ import {
   EntityTarget,
   FindManyOptions,
   FindOneOptions,
+  Not,
   ObjectLiteral,
 } from 'typeorm';
 
@@ -25,11 +26,12 @@ export class ServiceBase<
       TUpdateDto
     >,
     protected _functionToCreateObjectToFindIfTheEntityAlreadyExists: (
-      dto: TCreateDto,
+      dto: TCreateDto | TResponse,
     ) => any,
     protected _article: string,
     protected _resourceName: string,
     private _requiresValidationInCreation: boolean = true,
+    private _requiresValidationInUpdate: boolean = true,
   ) {}
 
   async findOne(
@@ -57,8 +59,14 @@ export class ServiceBase<
 
   async create(dto: TCreateDto) {
     if (this._requiresValidationInCreation) {
+      const filterToKnowIfAlreadyExists =
+        this._functionToCreateObjectToFindIfTheEntityAlreadyExists({
+          ...dto,
+          state: 1,
+        });
+      filterToKnowIfAlreadyExists.state = 1;
       const entityFounded = await this._repository.findOne(
-        this._functionToCreateObjectToFindIfTheEntityAlreadyExists(dto),
+        filterToKnowIfAlreadyExists,
       );
       if (entityFounded != null)
         throw new HttpException(
@@ -78,7 +86,24 @@ export class ServiceBase<
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
 
-    await this.findOne({ id } as any);
+    const entity = await this.findOne({ id } as any);
+    if (this._requiresValidationInUpdate) {
+      const valuesToFilter =
+        this._functionToCreateObjectToFindIfTheEntityAlreadyExists({
+          ...entity,
+          ...dto,
+        });
+      const entityFounded = await this._repository.findOne({
+        ...valuesToFilter,
+        state: 1,
+        id: Not(id),
+      });
+      if (entityFounded != null)
+        throw new HttpException(
+          `Ya existe un ${this._resourceName} con estos datos`,
+          HttpStatus.CONFLICT,
+        );
+    }
 
     const result = await this._repository.update(id, dto);
     if (result.affected == 0)
