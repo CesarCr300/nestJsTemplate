@@ -13,3 +13,9 @@ services:
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
+    deploy:
+      resources:
+        limits:
+          memory: '1g'
+        reservations:
+          memory: '256M'
