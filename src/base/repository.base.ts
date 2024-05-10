@@ -5,6 +5,7 @@ import {
   EntityTarget,
   FindManyOptions,
   FindOneOptions,
+  In,
   ObjectLiteral,
   Repository,
   UpdateResult,
@@ -36,6 +37,11 @@ export class RepositoryBase<
     await this.repository.save(createdEntity);
     return createdEntity as TResponse;
   }
+  async createMany(createDto: TCreateDto[]): Promise<TResponse[]> {
+    const createdEntity = this.repository.create(createDto);
+    await this.repository.save(createdEntity);
+    return createdEntity as TResponse[];
+  }
   async findAll(
     filter?: TFilterDto,
     options: FindManyOptions<ObjectLiteral> = {},
@@ -57,9 +63,12 @@ export class RepositoryBase<
     return await this.repository.update({ id }, updateDto);
   }
   async remove(id: number): Promise<DeleteResult> {
-    return await this.repository.delete(id);
+    return await this.repository.softDelete(id);
   }
-  async logicRemove(id: number): Promise<UpdateResult> {
-    return await this.repository.update({ id }, { state: 0 });
+  async removeWithEntity(entity: TResponse) {
+    return await this.repository.softRemove(entity);
+  }
+  async removeMany(ids: number[]): Promise<UpdateResult> {
+    return await this.repository.softDelete({ id: In(ids) });
   }
 }
