@@ -10,61 +10,98 @@ import {
 import { RepositoryBase } from './repository.base';
 import { EntityBase } from './entity.base';
 
+interface IServiceBase<
+  TEntity,
+  TResponseFindOne,
+  TResponseFindAll,
+  TCreateDto,
+> {
+  article: string;
+  resourceName: string;
+  requiresValidationInUpdate?: boolean;
+  requiresValidationInCreation?: boolean;
+  adapterFindAll: (e: TEntity) => TResponseFindAll;
+  adapterFindOne: (e: TEntity) => TResponseFindOne;
+  functionToCreateObjectToFindIfTheEntityAlreadyExists?: (
+    dto: TCreateDto | TResponseFindOne,
+  ) => any;
+}
+
 export class ServiceBase<
   T extends EntityTarget<ObjectLiteral & EntityBase>,
-  TResponse extends ObjectLiteral & EntityBase,
+  TEntity extends ObjectLiteral & EntityBase,
+  TResponseFindAll,
+  TResponseFindOne,
   TFilterDto,
   TCreateDto,
   TUpdateDto,
 > {
+  private _requiresValidationInCreation: boolean;
+  private _requiresValidationInUpdate: boolean;
+  private _article: string;
+  private _resourceName: string;
+  protected _functionToCreateObjectToFindIfTheEntityAlreadyExists: (
+    dto: TCreateDto | TResponseFindOne,
+  ) => any;
+  protected _adapterFindAll: (e: TEntity) => TResponseFindAll;
+  protected _adapterFindOne: (e: TEntity) => TResponseFindOne;
+
   constructor(
     protected _repository: RepositoryBase<
       T,
-      TResponse,
+      TEntity,
       TFilterDto,
       TCreateDto,
       TUpdateDto
     >,
-    protected _functionToCreateObjectToFindIfTheEntityAlreadyExists: (
-      dto: TCreateDto | TResponse,
-    ) => any,
-    protected _article: string,
-    protected _resourceName: string,
-    private _requiresValidationInCreation: boolean = true,
-    private _requiresValidationInUpdate: boolean = true,
-  ) {}
+    {
+      requiresValidationInUpdate = true,
+      requiresValidationInCreation = true,
+      article,
+      resourceName,
+      functionToCreateObjectToFindIfTheEntityAlreadyExists = () => {},
+      adapterFindAll,
+      adapterFindOne,
+    }: IServiceBase<TEntity, TResponseFindOne, TResponseFindAll, TCreateDto>,
+  ) {
+    this._requiresValidationInCreation = requiresValidationInCreation;
+    this._requiresValidationInUpdate = requiresValidationInUpdate;
+    this._article = article;
+    this._resourceName = resourceName;
+    this._functionToCreateObjectToFindIfTheEntityAlreadyExists =
+      functionToCreateObjectToFindIfTheEntityAlreadyExists;
+    this._adapterFindAll = adapterFindAll;
+    this._adapterFindOne = adapterFindOne;
+  }
 
   async findOne(
     filter: TFilterDto,
     options: FindOneOptions<ObjectLiteral> = {},
-  ): Promise<TResponse> {
-    const response = await this._repository.findOne(
-      { state: 1, ...filter },
-      options,
-    );
+  ): Promise<TResponseFindOne> {
+    const response = await this._repository.findOne({ ...filter }, options);
     if (response == null)
       throw new HttpException(
         `No se ha encontrado ${this._article} ${this._resourceName}`,
         HttpStatus.NOT_FOUND,
       );
-    return response;
+    return this._adapterFindOne(response);
   }
 
   async findAll(
     dto?: TFilterDto,
     options: FindManyOptions<ObjectLiteral> = {},
-  ) {
-    return await this._repository.findAll({ state: 1, ...dto }, options);
+  ): Promise<TResponseFindAll[]> {
+    const entities = await this._repository.findAll({ ...dto }, options);
+    return entities.map((e) => this._adapterFindAll(e));
   }
 
   async create(dto: TCreateDto) {
+    console.log(dto);
     if (this._requiresValidationInCreation) {
       const filterToKnowIfAlreadyExists =
         this._functionToCreateObjectToFindIfTheEntityAlreadyExists({
           ...dto,
-          state: 1,
         });
-      filterToKnowIfAlreadyExists.state = 1;
       const entityFounded = await this._repository.findOne(
         filterToKnowIfAlreadyExists,
       );
@@ -80,6 +117,7 @@ export class ServiceBase<
   }
 
   async update(id: number, dto: TUpdateDto) {
+    console.log('dto', dto);
     if (Object.keys(dto).length == 0)
       throw new HttpException(
         `No se estan registrando cambios en ${this._article} ${this._resourceName}`,
@@ -95,7 +133,6 @@ export class ServiceBase<
         });
       const entityFounded = await this._repository.findOne({
         ...valuesToFilter,
-        state: 1,
         id: Not(id),
       });
       if (entityFounded != null)
@@ -117,7 +154,7 @@ export class ServiceBase<
   async remove(id: number) {
     await this.findOne({ id } as any);
 
-    const result = await this._repository.logicRemove(id);
+    const result = await this._repository.remove(id);
     if (result.affected == 0)
       throw new HttpException(
         `Hubo un problema de eliminar ${this._article} ${this._resourceName}`,
@@ -125,5 +162,28 @@ export class ServiceBase<
       );
 
     return null;
+  }
+
+  async removeWithChildren(id: number, relations: any) {
+    const entity = await this._repository.findOne({ id } as any, {
+      relations,
+    });
+
+    if (!entity) {
+      throw new HttpException(
+        `No se ha encontrado ${this._article} ${this._resourceName}`,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    try {
+      await this._repository.removeWithEntity(entity);
+
+      return null;
+    } catch (error) {
+      throw new HttpException(
+        `Hubo un problema de eliminar ${this._article} ${this._resourceName}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
