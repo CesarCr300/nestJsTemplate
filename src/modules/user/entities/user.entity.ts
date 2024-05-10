@@ -1,15 +1,17 @@
 import { EntityBase } from '../../../base/entity.base';
 import {
   Column,
+  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserType } from './type-user.entity';
+import { AuditoryEntity } from '../../auditory/entities/auditory.entity';
 
 @Entity({ name: 'tbl_user' })
-export class User implements EntityBase {
+export class User extends AuditoryEntity implements EntityBase {
   @PrimaryGeneratedColumn({ name: 'int_id' })
   id: number;
   @Column({ name: 'vch_email' })
@@ -25,7 +27,8 @@ export class User implements EntityBase {
 
   @Column({ name: 'int_user_type_id' })
   userTypeId: number;
-  state: number;
+  @DeleteDateColumn({ name: 'dat_deleted_at' })
+  deletedAt: Date;
 
   @ManyToOne(() => UserType, (type) => type.users)
   @JoinColumn({ name: 'int_user_type_id' })
