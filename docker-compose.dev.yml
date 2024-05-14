@@ -1,21 +1,20 @@
-# docker-compose.yml
-
 version: '3'
 services:
   app:
+    environment:
+      - PORT=${PORT}
+      - DATABASE_HOST=host.docker.internal
+      - DATABASE_PORT=${DATABASE_PORT}
     build: 
       dockerfile: dev.Dockerfile
     ports:
-      - "3000:3000"
-    environment:
-      -  DATABASE_HOST=host.docker.internal
-      -  DATABASE_PORT=3306
+      - "${PORT}:${PORT}"
     volumes:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     deploy:
       resources:
         limits:
-          memory: '1g'
+          memory: '1000M'
         reservations:
-          memory: '256M'
+          memory: '500M'
